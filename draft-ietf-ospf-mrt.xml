@@ -16,7 +16,6 @@
 
 <!ENTITY I-D.atlas-rtgwg-mrt-mc-arch SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.atlas-rtgwg-mrt-mc-arch.xml">
 <!ENTITY I-D.atlas-bryant-shand-lf-timers SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.atlas-bryant-shand-lf-timers.xml">
-<!ENTITY I-D.ietf-ospf-segment-routing-extensions SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-ospf-segment-routing-extensions.xml">
 <!ENTITY I-D.ietf-ospf-ospfv3-lsa-extend SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-ospf-ospfv3-lsa-extend.xml">
 ]>
 
@@ -523,7 +522,7 @@ used across the area, it is critical for OSPF to flood which links to
 exclude from the MRT calculation.  This is done by introducing a new
 MRT-Ineligible Link sub-TLV.  For OSPFv2, this sub-TLV is carried 
 in the Extended Link TLV defined in
-<xref target="I-D.ietf-ospf-segment-routing-extensions"/>.  For 
+<xref target="I-D.ietf-ospf-lsa-extend"/>.  For 
 OSPFv3, this sub-TLV is carried in the Router-Link TLV defined in 
 <xref target="I-D.ietf-ospf-ospfv3-lsa-extend"/>.
 </t>
@@ -665,6 +664,12 @@ for Router LSAs and Router Information LSAs.</t>
 
 </section>
 
+<section anchor="Acknowledgements" title="Acknowledgements">
+  <t>The authors would like to thank Anil Kumar SN for
+  his suggestions and review.</t>
+
+</section>
+
 <section title="IANA Considerations">
 
 <t>IANA is requested to allocate values for the following 
@@ -674,7 +679,7 @@ and Controlled Convergence TLV (TBA-MRT-OSPF-4).</t>
 
 <t>IANA is requested to allocate a value from the 
 OSPF Extended Link LSA sub-TLV registry 
-<xref target="I-D.ietf-ospf-segment-routing-extensions"/>
+<xref target="I-D.ietf-ospf-lsa-extend"/>
 for the MRT-Ineligible Link sub-TLV (TBA-MRT-OSPF-2).  </t>
 
 <t>IANA is requested to allocate a value from the 
@@ -709,40 +714,10 @@ for the MRT-Ineligible Link sub-TLV (TBA-MRT-OSPF-3). </t>
     &RFC2328;
     &RFC4970;
     &RFC5340;
-	<reference anchor="I-D.ietf-rtgwg-mrt-frr-architecture">
-      <front>
-         <title>An Architecture for IP/LDP Fast-Reroute Using Maximally Redundant Trees</title>
-         <author fullname="Alia K. Atlas" initials="A." surname="Atlas"/>
-		 <author fullname="Robert Kebler" initials="R.K." surname="Kebler"/>
-         <author fullname="Chris Bowers" initials="C." surname="Bowers"/>
-		 <author fullname="G&aacute;bor S&aacute;ndor Enyedi" initials="G.S.E." surname="Enyedi"/>
-		 <author fullname="Andr&aacute;s Cs&aacute;sz&aacute;r" initials="A.C." surname="Cs&aacute;sz&aacute;r"/>
-		 <author fullname="Jeff Tantsura" initials="J." surname="Tantsura"/>
-		 <author fullname="Maciek Konstantynowicz" initials="M.K." surname="Konstantynowicz"/>
-		 <author fullname="Russ White" initials="R.W." surname="White"/>
-         <date month="July" day="4" year="2014"/>
-      </front>
-      <seriesInfo name="Internet-Draft" value="draft-rtgwg-mrt-frr-architecture-04"/>
-      <format type="TXT"
-          target="http://www.ietf.org/internet-drafts/draft-rtgwg-mrt-frr-architecture-04.txt"/>
-    </reference>
-
-	<reference anchor="I-D.ietf-rtgwg-mrt-frr-algorithm">
-      <front>
-         <title>Algorithms for computing Maximally Redundant Trees for IP/LDP Fast-Reroute</title>
-         <author fullname="G&aacute;bor S&aacute;ndor Enyedi" initials="G.S.E." surname="Enyedi"/>
-         <author fullname="Andr&aacute;s Cs&aacute;sz&aacute;r" initials="A.C." surname="Cs&aacute;sz&aacute;r"/>
-         <author fullname="Alia K. Atlas" initials="A." surname="Atlas"/>
-         <author fullname="Chris Bowers" initials="C." surname="Bowers"/>
-         <author fullname="Abishek Gopalan" initials="A.G." surname="Gopalan"/>
-         <date month="July" day="4" year="2014"/>
-      </front>
-      <seriesInfo name="Internet-Draft" value="draft-rtgwg-mrt-frr-algorithm-01"/>
-      <format type="TXT"
-          target="http://www.ietf.org/internet-drafts/draft-rtgwg-mrt-frr-algorithm-01.txt"/>
-    </reference>
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-rtgwg-mrt-frr-architecture-05.xml"?>
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-rtgwg-mrt-frr-algorithm-03.xml"?>
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-ospf-lsa-extend-00.xml"?>
 	
-	&I-D.ietf-ospf-segment-routing-extensions;
 	&I-D.ietf-ospf-ospfv3-lsa-extend;
 
     </references>
