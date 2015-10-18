@@ -45,7 +45,7 @@
 <?rfc subcompact="no" ?>
 <!-- keep one blank line between list items -->
 <!-- end of list of popular I-D processing instructions -->
-<rfc category="std" docName="draft-ietf-ospf-mrt-00" ipr="trust200902">
+<rfc category="std" docName="draft-ietf-ospf-mrt-01" ipr="trust200902">
   <!-- category values: std, bcp, info, exp, and historic
      ipr values: full3667, noModification3667, noDerivatives3667
      you can add the attributes updates="NNNN" and obsoletes="NNNN" 
@@ -134,7 +134,7 @@
       </address>
     </author>
 
-    <date day="19" month="January" year="2015"/>
+    <date day="16" month="October" year="2015"/>
 
     <!-- If the month and year are both specified and are the current ones, xml2rfc will fill 
          in the current day for you. If only the current year is specified, xml2rfc will fill 
@@ -403,6 +403,13 @@ Information LSA, then the router supports the default MRT Profile and
 has a GADAG Root Selection Priority of 128.</t>
 </list></t>
 
+<t> Note that the OSPFv2 Router LSA may be used to carry link metric 
+information for other topologies with non-zero MT-ID, in addition to the 
+default topology with MT-ID=0. However, the M-bit defined here only 
+indicates support for MRT in the default topology. These extension do 
+not define a method to signal support for MRT in topologies with 
+non-zero MT-ID. </t> 
+
 </section>
 
 <section title = "Advertising MRT Capability in OSPFv3">
@@ -515,7 +522,7 @@ and the absence of an MRT Profile TLV with a zero Profile ID value.</t>
 
 <section title="Advertising MRT-ineligible links for MRT">
 
-<t>Due to adminstrative policy, some otherwise eligible links in the
+<t>Due to administrative policy, some otherwise eligible links in the
 network topology may need to be excluded from the network graph upon
 which the MRT algorithm is run.  Since the same network graph must be
 used across the area, it is critical for OSPF to flood which links to
@@ -629,7 +636,7 @@ TLVs SHOULD silently ignore them.</t>
 is possible that Router Information LSAs with MRT-related TLVs remain
 in the neighbors' database briefly.  Such MRT-related TLVs SHOULD be
 ignored when the associated Router LSA from that router does not have
-the MRT capability set in its Router LSA.</t>
+the M-bit set in its Router LSA.</t>
 
 <t>When a router changes from not supporting MRT to supporting MRT, it
 will flood its Router LSA(s) with the M-bit set and may send an
@@ -637,13 +644,34 @@ updated Router Information LSA.  If a Router LSA is received with the
 M-bit newly set, an MRT computation SHOULD be scheduled but MAY be
 delayed up to 60 seconds to allow reception of updated related Router
 Information LSAs.  In general, when changes in MRT-related information
-is received, an MRT computation SHOULD be triggered.</t>
+are received, an MRT computation SHOULD be triggered.</t>
 
-<t>The rationale behind using the M bit in router LSA is to handle the  
-MRT capability changes gracefully in case of version upgrade/downgrade. 
-The M bit in router LSA ensures the latest "MRT capability" information 
-is available for computation when there is a downgrade to the version
-that doesn't support MRT and RI LSA.</t>
+<t>The rationale behind using the M-bit in the Router LSA is to properly 
+handle the MRT capability changes in case of software version downgrade. 
+Without the M-bit mechanism, routers would need to rely only on the 
+presence or absence of the MRT Profile TLV in the Router Information LSA 
+to determine which other routers support MRT. This could lead the to 
+following scenario. Router A is running a software version supporting 
+MRT and has MRT enabled with profile 0. Therefore, router A advertises 
+the MRT Profile TLV in the Router Information LSA, and other routers in 
+the network store that RI LSA. Router A is downgraded to a version of 
+software supporting neither MRT nor the Router Information LSA. When 
+router A restarts, it will not originate the RI LSA, since it doesn't 
+support it. However, the other routers in the network will still have a 
+RI LSA from router A indicating support for MRT with profile 0. This is 
+an undesirable state.</t>
+
+<t> Requiring the M-bit in the Router LSA avoids this scenario. Before 
+the software downgrade, router A originates a Router LSA with the M-bit 
+set. After the software downgrade, router A will originate a new Router 
+LSA with the M-bit unset. The M bit in router LSA ensures the latest 
+MRT capability information is available for computation when there is 
+a downgrade to a version that doesn't support MRT and RI LSA.</t> 
+
+
+
+
+
 </section>
 
 </section>
