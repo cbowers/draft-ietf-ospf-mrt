@@ -15,7 +15,7 @@ Or the bitlified version of the above URL: http://bit.ly/1MxqIFq
 And this should produce a diff of the most recently published ietf draft, and the latest version in the repository.
 https://tools.ietf.org/rfcdiff?url1=draft-ietf-ospf-mrt.txt&url2=http://xml2rfc.tools.ietf.org/cgi-bin/xml2rfc.cgi?url=https://raw.githubusercontent.com/cbowers/draft-ietf-ospf-mrt/master/draft-ietf-ospf-mrt.xml&modeAsFormat=txt/ascii&type=ascii
 
-Or the bitlified version of the above URL: http://bit.ly/1NiZaqb
+Or the bitlified version of the above URL: http://bit.ly/1hLVUrV
 
 If that doesn't work, paste the raw github content URL into the xml2rfc tool at:
 http://xml2rfc.tools.ietf.org/
