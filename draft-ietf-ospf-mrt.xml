@@ -134,7 +134,7 @@
       </address>
     </author>
 
-    <date day="16" month="October" year="2015"/>
+    <date day="18" month="October" year="2015"/>
 
     <!-- If the month and year are both specified and are the current ones, xml2rfc will fill 
          in the current day for you. If only the current year is specified, xml2rfc will fill 
@@ -399,24 +399,20 @@ below.</t>
 <t><list style="hanging">
 <t hangText="M bit: "> When set, the router supports MRT.  If no
 separate MRT Profile TLV is advertised in the associated Router
-Information LSA, then the router supports the default MRT Profile and
+Information LSA, then the router supports the default MRT Profile
+for the default MT topology and
 has a GADAG Root Selection Priority of 128.</t>
 </list></t>
-
-<t> Note that the OSPFv2 Router LSA may be used to carry link metric 
-information for other topologies with non-zero MT-ID, in addition to the 
-default topology with MT-ID=0. However, the M-bit defined here only 
-indicates support for MRT in the default topology. These extension do 
-not define a method to signal support for MRT in topologies with 
-non-zero MT-ID. </t> 
 
 </section>
 
 <section title = "Advertising MRT Capability in OSPFv3">
 
-<t>Similarly, the M-bit is defined in the OSPFv3 Router LSA as shown
-below.  Since there can be multiple router LSAs, the M-bit needs to be
-set on all of them.</t>
+<t>Similarly, the M-bit is defined in the OSPFv3 Router LSA <xref 
+target="RFC5340"/> as shown below. Since there can be multiple router 
+LSAs in OSPFv3, the M-bit SHOULD be set in all of them. However, in the 
+case of a mismatch, the values in the LSA with the lowest Link State ID 
+take precedence.</t> 
 
 <figure title="M-bit in OSPFv3 Router LSA">
 <artwork align="center"><![CDATA[
@@ -459,10 +455,11 @@ set on all of them.</t>
 </figure>
 
 <t><list style="hanging">
-<t hangText="M bit: "> When set, the router supports MRT.  If no
-separate MRT Profile TLV is advertised in the associated Router
-Information LSA, then the router supports the default MRT Profile and
-has a GADAG Root Selection Priority of 128.</t>
+<t hangText="M bit: "> When set, the router supports MRT. If no separate 
+MRT Profile TLV is advertised in the associated Router Information LSA, 
+then the router supports the default MRT Profile for the default MT 
+topology and has a GADAG Root Selection Priority of 128.</t> 
+
 </list></t>
 
 </section>
@@ -475,6 +472,11 @@ indicate a non-default GADAG Root Selection Priority.  The MRT Profile
 TLV is advertised within the OSPF router information LSA which is 
 defined for both OSPFv2 and OSPFv3 in 
 <xref target="RFC4970"/>. The RI LSA MUST have area scope.</t>
+
+<t> Note that the presence of the MRT Profile TLV indicates support for 
+a given MRT profile in the default topology (MT-ID = 0). The extensions 
+in this document do not define a method to advertise support for MRT 
+profiles in topologies with non-zero MT-ID. </t> 
 
 <figure title="MRT Profile TLV in Router Information LSA">
 <artwork align="center"><![CDATA[
@@ -529,7 +531,7 @@ used across the area, it is critical for OSPF to flood which links to
 exclude from the MRT calculation.  This is done by introducing a new
 MRT-Ineligible Link sub-TLV.  For OSPFv2, this sub-TLV is carried 
 in the Extended Link TLV defined in
-<xref target="I-D.ietf-ospf-lsa-extend"/>.  For 
+<xref target="I-D.ietf-ospf-prefix-link-attr"/>.  For 
 OSPFv3, this sub-TLV is carried in the Router-Link TLV defined in 
 <xref target="I-D.ietf-ospf-ospfv3-lsa-extend"/>.
 </t>
@@ -669,9 +671,6 @@ MRT capability information is available for computation when there is
 a downgrade to a version that doesn't support MRT and RI LSA.</t> 
 
 
-
-
-
 </section>
 
 </section>
@@ -700,21 +699,95 @@ for Router LSAs and Router Information LSAs.</t>
 
 <section title="IANA Considerations">
 
-<t>IANA is requested to allocate values for the following 
-OSPF Router Information TLV Types
-<xref target="RFC4970"/>:  MRT Profile TLV (TBA-MRT-OSPF-1), 
-and Controlled Convergence TLV (TBA-MRT-OSPF-4).</t>
+<section title="M-bit">
+<t>IANA is requested to allocate the M-bit(value 0x20 in the
+router properties field of the Router-LSA) <xref target="RFC2328"/>
+<xref target="RFC4940"/> from 
+the OSPFv2 Router Properties Registry.
+The contents of the OSPFv2 Router Properties Registry  
+after implementing the above request is shown below.</t> 
 
-<t>IANA is requested to allocate a value from the 
-OSPF Extended Link LSA sub-TLV registry 
-<xref target="I-D.ietf-ospf-lsa-extend"/>
-for the MRT-Ineligible Link sub-TLV (TBA-MRT-OSPF-2).  </t>
+<figure>
+<artwork align="left"><![CDATA[
+   Value Description Reference
+   ----- ----------- ---------
+   0x01  B-bit       [RFC2328]
+   0x02  E-bit       [RFC2328]
+   0x04  V-bit       [RFC2328]
+   0x08  W-bit       [RFC1584]
+   0x10  Nt-bit      [RFC3101]
+   0x20  M-bit       [This draft]
+]]></artwork>
+</figure> 
+
+<t> This document also defines the corresponding M-bit for OSPFv3 
+Router-LSAs. <xref target="RFC4940"/> created several IANA registries 
+for OSPFv2 and OSPFv3, including the OSPFv2 Router Properties Registry 
+above. However, it did not create a corresponding OSPFv3 Router 
+Properties Registry. <xref target="RFC5340"/> discusses the 
+corresponding OSPFv2 bits which were already defined at the time, and it 
+indicates that those bits have the same meaning in OSPFv3 as in OSPFv2. 
+Therefore, it would be reasonable to assume that the OSPFv2 Router 
+Properties Registry also applies to OSPFv3. This documents requests that 
+IANA make this assumption explicit in the following way.</t> 
+
+
+
+ <t>IANA is requested to rename the "OSPFv2 Router Properties Registry" 
+to the "OSPF Router Properties Registry (both v2 and v3)". The following 
+text should remain in this document.</t> 
+
+<t> The IANA registry "OSPF Router Properties Registry (both v2 and v3)" 
+applies to the 8-bit field following the length field in the Router-LSA 
+in both OSPFv2 and OSPFv3. </t> 
+
+
+
+</section>
+
+<section title="MRT Profile and Controlled Convergence TLVs">
+<t>IANA is requested to allocate values for the following OSPF Router 
+Information TLV Types <xref target="RFC4970"/>: MRT Profile TLV 
+(TBA-MRT-OSPF-1), and Controlled Convergence TLV (TBA-MRT-OSPF-4). The 
+requested entries in the OSPF Router Information (RI) TLVs registry are shown 
+below.</t> 
+
+<figure>
+<artwork align="left"><![CDATA[
+Type Value      Capabilities                  Reference
+-------------   ----------------------        ------------
+TBA-MRT-OSPF-1  MRT Profile TLV               [This draft]
+TBA-MRT-OSPF-4  Controlled Convergence TLV    [This draft]
+]]></artwork>
+</figure> 
+</section>
+
+<section title="MRT-Ineligible Link sub-TLV">
+<t>IANA is requested to allocate a value from the OSPF Extended Link TLV 
+sub-TLV registry defined in <xref 
+target="I-D.ietf-ospf-prefix-link-attr"/> for the MRT-Ineligible Link 
+sub-TLV (TBA-MRT-OSPF-2). The OSPF Extended Link TLV sub-TLV registry 
+after implementing the above request is shown below.</t> 
+
+<figure>
+<artwork align="left"><![CDATA[
+Value           Description                   Reference
+-------------   ----------------------        ------------
+0               Reserved                      [prefix-link-attr-draft]
+TBA-MRT-OSPF-2  MRT-Ineligible Link sub-TLV   [This draft]
+2-32767         Unassigned                    [prefix-link-attr-draft]
+32768-33023     Reserved for Experimental Use [prefix-link-attr-draft]
+33024-65535     Reserved                      [prefix-link-attr-draft]
+]]></artwork>
+</figure> 
 
 <t>IANA is requested to allocate a value from the 
 OSPFv3 Extended-LSA sub-TLV registry
 <xref target="I-D.ietf-ospf-ospfv3-lsa-extend"/>
-for the MRT-Ineligible Link sub-TLV (TBA-MRT-OSPF-3). </t>
-
+for the MRT-Ineligible Link sub-TLV (TBA-MRT-OSPF-3).
+The OSPFv3 Extended-LSA sub-TLV registry has not yet been
+created by IANA. </t>
+</section>
 
 </section>
 
@@ -742,10 +815,10 @@ for the MRT-Ineligible Link sub-TLV (TBA-MRT-OSPF-3). </t>
     &RFC2328;
     &RFC4970;
     &RFC5340;
-	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-rtgwg-mrt-frr-architecture-05.xml"?>
-	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-rtgwg-mrt-frr-algorithm-03.xml"?>
-	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-ospf-lsa-extend-00.xml"?>
-	
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.4940.xml"?>
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-rtgwg-mrt-frr-architecture-07.xml"?>
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-rtgwg-mrt-frr-algorithm-06.xml"?>
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-ospf-prefix-link-attr-13.xml"?>
 	&I-D.ietf-ospf-ospfv3-lsa-extend;
 
     </references>
@@ -760,10 +833,5 @@ for the MRT-Ineligible Link sub-TLV (TBA-MRT-OSPF-3). </t>
 
     </references>
 
-    <!-- Change Log
-
-v00 2013-07-02  AKA   Initial version
-
--->
   </back>
 </rfc>
