@@ -108,16 +108,16 @@
     </author>
 
    <author fullname="Jeff Tantsura" initials="J.T." surname="Tantsura">
-   <organization>Ericsson</organization>
+   <organization>Individual</organization>
    <address>
      <postal>
-       <street>300 Holger Way</street>
-       <city>San Jose</city>
-         <region>CA</region>
-         <code>95134</code>
+       <street></street>
+       <city></city>
+         <region></region>
+         <code></code>
          <country>USA</country>       
      </postal>
-     <email>jeff.tantsura@ericsson.com</email>
+     <email>jefftant.ietf@gmail.com</email>
    </address>
    </author>
    
@@ -134,7 +134,7 @@
       </address>
     </author>
 
-    <date day="18" month="October" year="2015"/>
+    <date day="18" month="May" year="2016"/>
 
     <!-- If the month and year are both specified and are the current ones, xml2rfc will fill 
          in the current day for you. If only the current year is specified, xml2rfc will fill 
@@ -634,42 +634,29 @@ TLVs SHOULD silently ignore them.</t>
 
 <section title="Handling MRT Capability Changes">
 
-<t>When a router changes from supporting MRT to not supporting MRT, it
-is possible that Router Information LSAs with MRT-related TLVs remain
-in the neighbors' database briefly.  Such MRT-related TLVs SHOULD be
-ignored when the associated Router LSA from that router does not have
-the M-bit set in its Router LSA.</t>
+<t>When a router that is running a version of software supporting MRT 
+is downgraded to software that does not support MRT, it is important 
+that the routers still running MRT do not continue to use the Router 
+Information LSA (RI LSA) containing the MRT Profile TLV advertised by 
+the downgraded router before the downgrade. As long as the downgraded 
+router supports Opaque LSAs, the downgraded router will purge the old RI 
+LSA containing the MRT Profile TLV that it originated before the 
+downgrade. This will occur when the downgraded router receives the 
+self-originated RI LSA after restarting, as described in Section 13.4 
+and 14.1 of <xref target="RFC2328"/>. This behavior is clearly required 
+when the downgraded router supports the RI LSA. </t> 
 
-<t>When a router changes from not supporting MRT to supporting MRT, it
-will flood its Router LSA(s) with the M-bit set and may send an
-updated Router Information LSA.  If a Router LSA is received with the
-M-bit newly set, an MRT computation SHOULD be scheduled but MAY be
-delayed up to 60 seconds to allow reception of updated related Router
-Information LSAs.  In general, when changes in MRT-related information
-are received, an MRT computation SHOULD be triggered.</t>
-
-<t>The rationale behind using the M-bit in the Router LSA is to properly 
-handle the MRT capability changes in case of software version downgrade. 
-Without the M-bit mechanism, routers would need to rely only on the 
-presence or absence of the MRT Profile TLV in the Router Information LSA 
-to determine which other routers support MRT. This could lead the to 
-following scenario. Router A is running a software version supporting 
-MRT and has MRT enabled with profile 0. Therefore, router A advertises 
-the MRT Profile TLV in the Router Information LSA, and other routers in 
-the network store that RI LSA. Router A is downgraded to a version of 
-software supporting neither MRT nor the Router Information LSA. When 
-router A restarts, it will not originate the RI LSA, since it doesn't 
-support it. However, the other routers in the network will still have a 
-RI LSA from router A indicating support for MRT with profile 0. This is 
-an undesirable state.</t>
-
-<t> Requiring the M-bit in the Router LSA avoids this scenario. Before 
-the software downgrade, router A originates a Router LSA with the M-bit 
-set. After the software downgrade, router A will originate a new Router 
-LSA with the M-bit unset. The M bit in router LSA ensures the latest 
-MRT capability information is available for computation when there is 
-a downgrade to a version that doesn't support MRT and RI LSA.</t> 
-
+<t>It is also reasonable to expect this behavior even when the software 
+on the downgraded router does not understand the RI LSA. Although this 
+precise behavior is not explicitly described in <xref target="RFC2328"/> 
+or <xref target="RFC5120"/>, it is reasonable to infer from the 
+documents. As long as the downgraded router supports Opaque LSAs, it is 
+required to flood link-state type 10 (area-local scope) Opaque LSAs, 
+even those that it does not understand <xref target="RFC5120"/>. So, 
+when a restarting router receives a self-originated link-state type 10 
+Opaque LSA whose Option Type it does not recognize, it can (in 
+principle) flood it or purge it. Purging an unknown self-originated 
+Opaque LSA is the most reasonable thing to do.</t> 
 
 </section>
 
@@ -698,52 +685,6 @@ for Router LSAs and Router Information LSAs.</t>
 </section>
 
 <section title="IANA Considerations">
-
-<section title="M-bit">
-<t>IANA is requested to allocate the M-bit(value 0x20 in the
-router properties field of the Router-LSA) <xref target="RFC2328"/>
-<xref target="RFC4940"/> from 
-the OSPFv2 Router Properties Registry.
-The contents of the OSPFv2 Router Properties Registry  
-after implementing the above request is shown below.</t> 
-
-<figure>
-<artwork align="left"><![CDATA[
-   Value Description Reference
-   ----- ----------- ---------
-   0x01  B-bit       [RFC2328]
-   0x02  E-bit       [RFC2328]
-   0x04  V-bit       [RFC2328]
-   0x08  W-bit       [RFC1584]
-   0x10  Nt-bit      [RFC3101]
-   0x20  M-bit       [This draft]
-]]></artwork>
-</figure> 
-
-<t> This document also defines the corresponding M-bit for OSPFv3 
-Router-LSAs. <xref target="RFC4940"/> created several IANA registries 
-for OSPFv2 and OSPFv3, including the OSPFv2 Router Properties Registry 
-above. However, it did not create a corresponding OSPFv3 Router 
-Properties Registry. <xref target="RFC5340"/> discusses the 
-corresponding OSPFv2 bits which were already defined at the time, and it 
-indicates that those bits have the same meaning in OSPFv3 as in OSPFv2. 
-Therefore, it would be reasonable to assume that the OSPFv2 Router 
-Properties Registry also applies to OSPFv3. This documents requests that 
-IANA make this assumption explicit in the following way.</t> 
-
-
-
- <t>IANA is requested to rename the "OSPFv2 Router Properties Registry" 
-to the "OSPF Router Properties Registry (both v2 and v3)". The following 
-text should remain in this document.</t> 
-
-<t> The IANA registry "OSPF Router Properties Registry (both v2 and v3)" 
-applies to the 8-bit field following the length field in the Router-LSA 
-in both OSPFv2 and OSPFv3. </t> 
-
-
-
-</section>
 
 <section title="MRT Profile and Controlled Convergence TLVs">
 <t>IANA is requested to allocate values for the following OSPF Router 
@@ -816,6 +757,7 @@ created by IANA. </t>
     &RFC4970;
     &RFC5340;
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.4940.xml"?>
+		<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.5120.xml"?>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-rtgwg-mrt-frr-architecture-07.xml"?>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-rtgwg-mrt-frr-algorithm-06.xml"?>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-ospf-prefix-link-attr-13.xml"?>
