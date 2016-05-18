@@ -10,7 +10,7 @@
 <!ENTITY RFC2328 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2328.xml">
 <!ENTITY RFC3137 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3137.xml">
 <!ENTITY RFC4915 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4915.xml">
-<!ENTITY RFC4970 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4970.xml">
+<!ENTITY RFC7770 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7770.xml">
 <!ENTITY RFC5340 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5340.xml">
 <!ENTITY RFC5715 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5715.xml">
 
@@ -346,7 +346,7 @@ computation.</t>
 <t>A router may advertise an MRT Profile TLV to indicate support for one 
 or more MRT Profiles.  The MRT Profile TLV is advertised within the OSPF 
 router information LSA which is defined for both OSPFv2 and OSPFv3 in 
-<xref target="RFC4970"/>. The RI LSA MUST have area scope.</t> 
+<xref target="RFC7770"/>. The RI LSA MUST have area scope.</t> 
 
 <t> Note that the presence of the MRT Profile TLV indicates support for 
 a given MRT profile in the default topology (MT-ID = 0). The extensions 
@@ -426,6 +426,11 @@ for that link, including the MRT-Ineligible Link sub-TLV. The
 OSPVv2 Extended Link TLV and OSPFv3 Router-Link TLV
 have area wide scope.</t>
 
+<t> Note that a router that advertises support for MRT with the MRT Profile TLV 
+MUST also support receipt of the MRT-Ineligible Link sub-TLVs.  This ensures that all
+routers participating in a given MRT Island have the same view of the links included
+in the MRT Island.</t>
+
 <section title="MRT-Ineligible Link sub-TLV">
 
 <figure title="MRT-Ineligible Link sub-TLV">
@@ -459,9 +464,9 @@ all profiles.</t>
 <t>As part of converging the network after a single failure, Section
 12.2 of <xref target ="I-D.ietf-rtgwg-mrt-frr-architecture"/>
 describes the need to wait for a configured or advertised period for
-all routers to be using their new SPTs.  Similarly, any work on
-avoiding micro-forwarding loops during convergence<xref
-target="RFC5715"/> requires determining the maximum among all routers
+all routers to be using their new SPTs.  Similarly, some proposals to
+avoid micro-forwarding loops during convergence<xref
+target="RFC5715"/> require determining the maximum among all routers
 in the area of the worst-case route computation and FIB installation
 time.  More details on the specific reasoning and need for flooding it
 are given in <xref target="I-D.atlas-bryant-shand-lf-timers"/>.</t>
@@ -494,11 +499,11 @@ into account network scale or real-time measurements, or both.
 Advertisements SHOULD be dampened to avoid frequent
 communication of small changes in the FIB compute/install time.</t>
 
-<t>A router receiving the Controlled Convergence sub-TLV SHOULD
+<t>A router receiving the Controlled Convergence TLV SHOULD
 estimate the network convergence time as the maximum of the 
 FIB compute/install times advertised by the routers in an area,
 including itself.  In order to account for routers that do not advertise
-the Controlled Convergence sub-TLV, a router MAY use a locally configured 
+the Controlled Convergence TLV, a router MAY use a locally configured 
 minimum network convergence time as a lower bound on the computed
 network convergence time.  A router MAY use a locally configured 
 maximum network convergence time as an upper bound on the computed
@@ -509,12 +514,24 @@ network convergence time.
 
 <section title="Backwards Compatibility">
 
-<t>The MRT capability bit, the MRT Profile, the MRT-Ineligible Link,
-and the OSPFv3 MRT-Ineligible Link TLVs are defined in this document.
-They should not introduce any interoperability issues.  Routers that
-do not support the MRT capability bit in the router LSA SHOULD
-silently ignore it.  Routers that do not support the new MRT-related
-TLVs SHOULD silently ignore them.</t>
+<t>The MRT Profile TLV, the MRT-Ineligible Link sub-TLV, the OSPFv3 
+MRT-Ineligible Link sub-TLV, and the Controlled Convergence TLV are 
+defined in this document. A router that does not understand the MRT 
+Profile TLV will ignore it. A router that does not advertise an MRT 
+Profile TLV with a Profile ID may do so either because it doesn't 
+understand the MRT Profile TLV, or because it understands these 
+extensions, but chooses not to advertise support for any MRT profile. 
+Routers that support the MRT Profile TLV will treat either case in the 
+same manner, by excluding the router not advertising the MRT Profile 
+from the particular MRT Island.</t>
+
+<t> The MRT-Ineligible Link sub-TLVs will be ignored by a router that 
+doesn't understand MRT, and a router supporting MRT must support receipt 
+of the MRT-Ineligible Link sub-TLVs.</t> 
+
+<t> Finally, applications that utilize the Controlled Convergence TLV can 
+use local configuration to account for routers that do not understand 
+the Controlled Convergence TLV.</t> 
 
 <section title="Handling MRT Capability Changes">
 
@@ -532,11 +549,10 @@ when the downgraded router supports the RI LSA. </t>
 
 <t>It is also reasonable to expect this behavior even when the software 
 on the downgraded router does not understand the RI LSA. Although this 
-precise behavior is not explicitly described in <xref target="RFC2328"/> 
-or <xref target="RFC5120"/>, it is reasonable to infer from the 
+precise behavior is not explicitly described in <xref target="RFC2328"/> , it is reasonable to infer from the 
 documents. As long as the downgraded router supports Opaque LSAs, it is 
 required to flood link-state type 10 (area-local scope) Opaque LSAs, 
-even those that it does not understand <xref target="RFC5120"/>. So, 
+even those that it does not understand <xref target="RFC5250"/>. So, 
 when a restarting router receives a self-originated link-state type 10 
 Opaque LSA whose Option Type it does not recognize, it can (in 
 principle) flood it or purge it. Purging an unknown self-originated 
@@ -572,7 +588,7 @@ for Router LSAs and Router Information LSAs.</t>
 
 <section title="MRT Profile and Controlled Convergence TLVs">
 <t>IANA is requested to allocate values for the following OSPF Router 
-Information TLV Types <xref target="RFC4970"/>: MRT Profile TLV 
+Information TLV Types <xref target="RFC7770"/>: MRT Profile TLV 
 (TBA-MRT-OSPF-1), and Controlled Convergence TLV (TBA-MRT-OSPF-4). The 
 requested entries in the OSPF Router Information (RI) TLVs registry are shown 
 below.</t> 
@@ -638,10 +654,9 @@ created by IANA. </t>
 
     <references title="Normative References">
     &RFC2328;
-    &RFC4970;
+    &RFC7770;
     &RFC5340;
-	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.4940.xml"?>
-		<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.5120.xml"?>
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.5250.xml"?>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-rtgwg-mrt-frr-architecture-07.xml"?>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-rtgwg-mrt-frr-algorithm-06.xml"?>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-ospf-prefix-link-attr-13.xml"?>
