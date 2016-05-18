@@ -45,7 +45,7 @@
 <?rfc subcompact="no" ?>
 <!-- keep one blank line between list items -->
 <!-- end of list of popular I-D processing instructions -->
-<rfc category="std" docName="draft-ietf-ospf-mrt-01" ipr="trust200902">
+<rfc category="std" docName="draft-ietf-ospf-mrt-02" ipr="trust200902">
   <!-- category values: std, bcp, info, exp, and historic
      ipr values: full3667, noModification3667, noDerivatives3667
      you can add the attributes updates="NNNN" and obsoletes="NNNN" 
@@ -340,138 +340,13 @@ computation.</t>
 </section>
 </section>
 
-<section title="MRT Capability Advertisement">
-
-<t>A router that supports MRT indicates this by setting a newly
-defined M bit in the Router LSA.  If the router provides no other
-information via a separate MRT Profile TLV, then the router supports
-the default MRT Profile with a GADAG Root Selection Priority of
-128.</t>
-
-<t>In addition, a router can advertise a newly-defined MRT Profile TLV
-within the scope of the OSPF router information LSA <xref
-target="RFC4970"/>.  This TLV also includes the GADAG Root Selection
-Priority.</t>
-
-<section title = "Advertising MRT Capability in OSPFv2">
-
-<t>A new M-bit is defined in the Router-LSA (defined in <xref
-target="RFC2328"/> and updated in <xref target="RFC4915"/>), as pictured
-below.</t>
-
-<figure title="M-bit in OSPFv2 Router LSA">
-<artwork align="center"><![CDATA[
-  0                   1                   2                   3
-  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |            LS age             |     Options   |       1       |
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                        Link State ID                          |
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                     Advertising Router                        |
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                     LS sequence number                        |
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |         LS checksum           |             length            |
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |*|*|M|N|W|V|E|B|        0      |            # links            |
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                          Link ID                              |
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                         Link Data                             |
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |     Type      |     # MT-ID   |            metric             |
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |     MT-ID     |       0       |          MT-ID  metric        |
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                              ...                              |
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |     MT-ID     |       0       |          MT-ID  metric        |
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                          Link ID                              |
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                         Link Data                             |
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                              ...                              |
-]]></artwork>
-</figure>
-
-<t><list style="hanging">
-<t hangText="M bit: "> When set, the router supports MRT.  If no
-separate MRT Profile TLV is advertised in the associated Router
-Information LSA, then the router supports the default MRT Profile
-for the default MT topology and
-has a GADAG Root Selection Priority of 128.</t>
-</list></t>
-
-</section>
-
-<section title = "Advertising MRT Capability in OSPFv3">
-
-<t>Similarly, the M-bit is defined in the OSPFv3 Router LSA <xref 
-target="RFC5340"/> as shown below. Since there can be multiple router 
-LSAs in OSPFv3, the M-bit SHOULD be set in all of them. However, in the 
-case of a mismatch, the values in the LSA with the lowest Link State ID 
-take precedence.</t> 
-
-<figure title="M-bit in OSPFv3 Router LSA">
-<artwork align="center"><![CDATA[
-
-   0                    1                   2                   3
-   0 1 2 3  4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-  +-+-+-+--+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |           LS Age               |0|0|1|         1               |
-  +-+-+-+--+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                       Link State ID                            |
-  +-+-+-+--+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                    Advertising Router                          |
-  +-+-+-+--+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                    LS Sequence Number                          |
-  +-+-+-+--+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |        LS Checksum             |            Length             |
-  +-+-+-+--+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |  0|M|Nt|x|V|E|B|            Options                            |
-  +-+-+-+--+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |     Type       |       0       |          Metric               |
-  +-+-+-+--+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                      Interface ID                              |
-  +-+-+-+--+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                   Neighbor Interface ID                        |
-  +-+-+-+--+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                    Neighbor Router ID                          |
-  +-+-+-+--+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                             ...                                |
-  +-+-+-+--+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |     Type       |       0       |          Metric               |
-  +-+-+-+--+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                      Interface ID                              |
-  +-+-+-+--+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                   Neighbor Interface ID                        |
-  +-+-+-+--+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                    Neighbor Router ID                          |
-  +-+-+-+--+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                             ...                                |
-]]></artwork>
-</figure>
-
-<t><list style="hanging">
-<t hangText="M bit: "> When set, the router supports MRT. If no separate 
-MRT Profile TLV is advertised in the associated Router Information LSA, 
-then the router supports the default MRT Profile for the default MT 
-topology and has a GADAG Root Selection Priority of 128.</t> 
-
-</list></t>
-
-</section>
 
 <section title="MRT Profile TLV in Router Information LSA">
 
-<t>A router may advertise an MRT Profile TLV to indicate support for
-multiple MRT Profiles, for a non-default MRT Profile, and/or to
-indicate a non-default GADAG Root Selection Priority.  The MRT Profile
-TLV is advertised within the OSPF router information LSA which is 
-defined for both OSPFv2 and OSPFv3 in 
-<xref target="RFC4970"/>. The RI LSA MUST have area scope.</t>
+<t>A router may advertise an MRT Profile TLV to indicate support for one 
+or more MRT Profiles.  The MRT Profile TLV is advertised within the OSPF 
+router information LSA which is defined for both OSPFv2 and OSPFv3 in 
+<xref target="RFC4970"/>. The RI LSA MUST have area scope.</t> 
 
 <t> Note that the presence of the MRT Profile TLV indicates support for 
 a given MRT profile in the default topology (MT-ID = 0). The extensions 
@@ -502,23 +377,32 @@ profiles in topologies with non-zero MT-ID. </t>
 ]]></artwork>
 </figure>
 
-<t> Each Profile ID listed indicates support for a given MRT Profile, as defined
-in <xref target="I-D.ietf-rtgwg-mrt-frr-architecture"/>.  A Profile ID
-value of 0 corresponds to the default MRT profile.</t>
+<t> Each Profile ID listed indicates support for a given MRT Profile, as 
+defined in <xref target="I-D.ietf-rtgwg-mrt-frr-architecture"/>. A 
+Profile ID value of 0 corresponds to the Default MRT profile.</t> 
 
-<t> The GADAG Priority is the GADAG Root Selection Priority associated
-with the advertising router in the MRT Island for the associated MRT
-Profile, as indicated by the Profile ID.  If multiple MRT Profiles are
-supported, then the length of this TLV varies.  The ordering of the
-profiles inside the TLV is not significant.  Multiple appearances of
-this TLV is not an error.</t>
+<t> The GADAG Priority is the GADAG Root Selection Priority associated 
+with the advertising router in the MRT Island for the associated MRT 
+Profile, as indicated by the Profile ID. An implementation SHOULD send 
+a default value of 128 for the GADAG Root Selection Priority if another 
+value is not explicitly configured.</t> 
 
-<t> Lack of support for the default MRT profile 
-is indicated by the presence of  
-an MRT Profile TLV with a non-zero Profile ID value, 
-and the absence of an MRT Profile TLV with a zero Profile ID value.</t>
+<t> The length of this TLV depends on the number of MRT profiles 
+supported. The ordering of the profiles inside the TLV is not 
+significant. Multiple appearances of this TLV is not an error.
+</t>
 
-</section>
+<t> An advertising router MUST NOT advertise the same Profile ID multiple 
+times in one or more TLVs. If a receiving router receives multiple 
+appearances of the same Profile ID for the same router, it MUST treat 
+the advertising router as NOT supporting the MRT Profile associated with 
+that Profile ID. This is the case even if the multiple appearances of 
+the same Profile ID have the same GADAG Priority values. However, other 
+Profile IDs advertised by the same advertising router that are not 
+repeated should continue to be honored by the receiving router. The 
+receiving router SHOULD also log an error message regarding the 
+multiple appearances of the same Profile ID for the same router.
+</t> 
 
 </section>
 
